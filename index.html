@@ -1,0 +1,104 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Finance Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+        }
+        .retro {
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 5px;
+            box-shadow: 3px 3px 10px #888;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl text-center mb-8">AI-Powered Finance Manager</h1>
+        
+        <div class="retro">
+            <form id="finance-form">
+                <div class="mb-4">
+                    <label for="income" class="block text-lg">Monthly Income</label>
+                    <input type="number" id="income" name="income" class="w-full p-2 mt-2 border-2 border-gray-300 rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="expenses" class="block text-lg">Monthly Expenses</label>
+                    <input type="number" id="expenses" name="expenses" class="w-full p-2 mt-2 border-2 border-gray-300 rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="goals" class="block text-lg">Financial Goals</label>
+                    <textarea id="goals" name="goals" class="w-full p-2 mt-2 border-2 border-gray-300 rounded" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Let's Do This!
+                </button>
+            </form>
+        </div>
+
+        <div id="output" class="retro mt-8 p-4 text-black"></div>
+
+    </div>
+
+    <footer class="mt-10 p-4 text-center text-white">
+        <a href="https://youtube.com/@ladli0?si=IfUZ_70i_Fo-Ops3" target="_blank">Made with ❤️ by ladli</a>
+    </footer>
+
+    <script>
+        document.getElementById('finance-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const income = document.getElementById('income').value;
+            const expenses = document.getElementById('expenses').value;
+            const goals = document.getElementById('goals').value;
+
+            const substitutedPrompt = `
+            I want to create an innovative AI-powered Personal Finance Manager app that helps users manage their finances effectively...
+            
+            1. Monthly Income: ${income}
+            2. Monthly Expenses: ${expenses}
+            3. Financial Goals: ${goals}
+            
+            `;
+            
+            const websocket = new WebSocket('wss://backend.buildpicoapps.com/ask_ai_streaming_v2');
+
+            websocket.addEventListener("open", () => {
+                websocket.send(
+                    JSON.stringify({
+                        appId: "forget-happen",
+                        prompt: substitutedPrompt,
+                    })
+                );
+            });
+
+            websocket.addEventListener("message", (event) => {
+                console.log(event.data);
+                const output = document.getElementById('output');
+                output.innerText = `${output.innerText}${event.data}`;
+            });
+
+            websocket.addEventListener("close", (event) => {
+                console.log("Connection closed", event.code, event.reason);
+                if (event.code != 1000) {
+                    alert("Oops, we ran into an error. Refresh the page and try again.");
+                }
+            });
+
+            websocket.addEventListener("error", (error) => {
+                console.log('WebSocket error', error);
+                alert("Oops, we ran into an error. Refresh the page and try again.");
+            });
+        });
+    </script>
+
+</body>
+</html>
